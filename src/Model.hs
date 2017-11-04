@@ -3,6 +3,7 @@
 module Model where
 
 import System.Random
+import System.IO
 
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
@@ -83,7 +84,6 @@ getRandomNumber min max = getStdRandom (randomR (min,max))
 updateHighScores :: GameState -> IO GameState
 updateHighScores gstate | state gstate == IsGameOver = 
                             do
-                                currentHighScores <- readFile "highscores.txt"
-                                writeFile "highscores.txt" (currentHighScores ++ "\n" ++ show (gameScore gstate))
+                                appendFile "highscores.txt" (show (gameScore gstate) ++ "\n")
                                 return $ initialState
                         | otherwise = return $ gstate
