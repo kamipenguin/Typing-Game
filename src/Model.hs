@@ -18,7 +18,7 @@ data GameState = GameState {
                  keyVar :: SpecialKey,                  -- the key
                  keyState :: KeyState,                  -- state of the key (Up or Down)
                  typedWord :: String,                   -- the word the player has typed
-                 randomSpawnPosition :: (Float, Float), -- the random spawn position where an enemy will be spawned in this gamestate
+                 randomSpawnPosition :: Point,          -- the random spawn position where an enemy will be spawned in this gamestate
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
                  gameDifficulty :: WordDifficulty,      -- the difficulty of the game
                  gameScore :: Int,                      -- the score of the player
@@ -50,10 +50,10 @@ data State = IsPlaying | IsGameOver | IsPaused
             deriving (Show, Eq)
 
 -- | Stores the data of an enemy
-data Enemy = Enemy {enemyPos :: (Float, Float), enemyWord :: String } 
+data Enemy = Enemy {enemyPos :: Point, enemyWord :: String } 
             deriving (Show, Ord, Eq)
 -- | Stores the data of the player
-data Player = Player { playerPos :: (Float, Float), playerRotationVal :: Float } 
+data Player = Player { playerPos :: Point, playerRotationVal :: Float } 
              deriving Show
 
 -- | Defines the word difficulty
