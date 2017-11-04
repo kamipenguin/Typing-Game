@@ -7,9 +7,9 @@ import View
 import Graphics.Gloss.Interface.IO.Game
 
 main :: IO ()
-main = playIO (InWindow "Typing Game" (width, height) (offset, offset)) -- Or FullScreen
+main = playIO (InWindow "Typing Game" (width, height) (offset, offset))
               black            -- Background color
-              fps               -- Frames per second
+              fps              -- Frames per second
               initialState     -- Initial state
               view             -- View function
               input            -- Event function

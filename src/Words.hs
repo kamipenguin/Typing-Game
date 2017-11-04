@@ -1,5 +1,6 @@
 -- | This module defines all the
 --   possible words in the game
+--   and the methods using the words
 module Words where
 
 import Model
@@ -7,13 +8,15 @@ import Model
 import Data.Maybe
 import Data.Set
 
+-- | List of all the easy words
 easyWords :: [String]
 easyWords = [
             "time", "mark", "ufo", "crow", "dish", 
             "map", "fate", "cook", "page", "fire", 
-            "ice", "cat", "era", "ale", "red"
+            "ice", "cat", "era", "nice", "red"
             ]
 
+-- | List of all the normal words
 normalWords :: [String]
 normalWords = [
               "scarf", "sweet", "potato", "penguin", "pearl", 
@@ -21,6 +24,7 @@ normalWords = [
               "yoghurt", "exact", "squid", "painter", "south"
               ]
 
+-- | List of all the hard words
 hardWords :: [String]
 hardWords = [
             "unconsidered", "advantageous", "balancing", "surfacing", "normalize", 
@@ -28,6 +32,13 @@ hardWords = [
             "photosynthesis", "population", "surround", "cropland", "ambiance"
             ]
 
+-- | Determines the difficulty of the word
+difficulty :: String -> WordDifficulty
+difficulty s | length s < 5 = Easy
+             | length s >= 5 && length s < 8 = Normal
+             | otherwise = Hard
+
+-- | Given a difficulty, picks random word out of the corresponding list
 pickRandomWord :: WordDifficulty -> IO String
 pickRandomWord diff | diff == Easy = 
                             do randomIndex <- getRandomNumber 0 ((length easyWords)-1)
