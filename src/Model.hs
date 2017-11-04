@@ -13,6 +13,8 @@ data GameState = GameState {
                  state :: State,
                  player :: Player,
                  enemies :: [Enemy],
+                 maxEnemies :: Int,
+                 enemySpawnInterval :: Float,
                  keyVar :: SpecialKey,
                  keyState :: KeyState,
                  typedWord :: String,
@@ -30,10 +32,12 @@ initialState = GameState {
                state = IsPlaying,
                player = Player { playerPos = (0, 0), playerRotationVal = 0 },
                enemies = [],
+               maxEnemies = 20,        -- Max enemies that can be present at a time
+               enemySpawnInterval = 2, -- Used to spawn enemies at a specified interval
                keyVar = KeyUnknown,
                keyState = Up,
                typedWord = "",
-               randomSpawnPosition = (0, 250),
+               randomSpawnPosition = (0, 350),
                randomWord = "test",
                gameDifficulty = Easy,
                gameScore = 0,
@@ -55,14 +59,6 @@ data Player = Player { playerPos :: (Float, Float), playerRotationVal :: Float }
 -- | Defines the word difficulty
 data WordDifficulty = Easy | Normal | Hard
                      deriving (Eq, Show)
-
--- | Used to spawn enemies at a specified interval
-noSecsBetweenCylces :: Float
-noSecsBetweenCylces = 2
-
--- | The max enemies that can be present at the same time in the game
-maxEnemies :: Int
-maxEnemies = 15
 
 -- | How fast the enemy is
 enemySpeed :: Float

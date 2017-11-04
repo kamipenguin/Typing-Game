@@ -47,8 +47,8 @@ enemyText e = uncurry translate (x, y) $ scale 0.15 0.15 $ color red $ text (ene
 
 -- | Defines where the typed word should be displayed and where
 currentText :: GameState -> Picture
-currentText gstate = uncurry translate (-190, -190) $ scale 0.15 0.15 $ color white $ text (typedWord gstate)
+currentText gstate = uncurry translate (-290, -290) $ scale 0.15 0.15 $ color white $ text (typedWord gstate)
 
 -- | Defines where the score text should be displayed and where
 scoreText :: GameState -> Picture
-scoreText gstate = uncurry translate (-190, 180) $ scale 0.1 0.1 $ color white $ text ("Score: " ++ show (gameScore gstate))
+scoreText gstate = uncurry translate (-290, 280) $ scale 0.1 0.1 $ color white $ text ("Score: " ++ show (gameScore gstate))

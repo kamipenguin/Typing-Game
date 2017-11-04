@@ -24,17 +24,17 @@ step secs gstate | state gstate == IsGameOver = updateHighScores gstate --When t
   
 -- | Spawns an enemy after some amount of time
 spawnEnemies :: Float -> GameState -> IO GameState
-spawnEnemies secs gstate | elapsedTime gstate + secs > noSecsBetweenCylces && length (enemies gstate) < maxEnemies
-                                -- Spawn an enemy at a random position outside a certain radius and with a random word
+spawnEnemies secs gstate | elapsedTime gstate + secs > enemySpawnInterval gstate && length (enemies gstate) < maxEnemies gstate
+                            -- Spawn an enemy at a random position outside a certain radius and with a random word
                             = do randomAngle <- getRandomNumber 0 360
                                  word <- pickRandomWord (gameDifficulty gstate)
                                  return $ gstate { 
                                           enemies = e, 
-                                          randomSpawnPosition = mulSV 240 (unitVectorAtAngle ((fromIntegral (randomAngle) - 90) * pi / 180)), 
+                                          randomSpawnPosition = mulSV 340 (unitVectorAtAngle ((fromIntegral (randomAngle) - 90) * pi / 180)), 
                                           randomWord = word, elapsedTime = 0 
                                           }
                          | otherwise
-                                -- Just update the elapsed time
+                            -- Just update the elapsed time
                             = return $ gstate { elapsedTime = elapsedTime gstate + secs }
                             where
                                 currentEnemies = enemies gstate
@@ -42,10 +42,26 @@ spawnEnemies secs gstate | elapsedTime gstate + secs > noSecsBetweenCylces && le
 
 -- | Updates the game difficulty over time
 updateDifficulty :: Float -> GameState -> GameState
-updateDifficulty secs gstate | gameTime gstate > 30 = gstate { gameDifficulty = Normal, gameTime = updatedTime }
-                             | gameTime gstate > 60 = gstate { gameDifficulty = Hard, gameTime = updatedTime }
-                             | otherwise = gstate { gameDifficulty = Easy, gameTime = updatedTime }
+updateDifficulty secs gstate | gameTime gstate > 20 && gameTime gstate < 40   
+                                    -- set difficulty to normal
+                                    = gstate { gameDifficulty = Normal, gameTime = updatedTime }
+                             | gameTime gstate >= 40 && gameTime gstate < 60
+                                    -- spawn enemies quicker
+                                    = gstate { enemySpawnInterval = 1, gameTime = updatedTime }
+                             | gameTime gstate >= 60 && gameTime gstate < 80  
+                                    -- set difficulty to hard
+                                    = gstate { gameDifficulty = Hard, gameTime = updatedTime }   
+                             | gameTime gstate >= 80 && gameTime gstate < 100 
+                                    -- more enemies can be present at a time
+                                    = gstate { maxEnemies = 30, gameTime = updatedTime }         
+                             | gameTime gstate >= 100 
+                                    -- spawn enemies quicker                         
+                                    = gstate { enemySpawnInterval = 0.5, gameTime = updatedTime }
+                             | otherwise  
+                                    -- difficulty is still on easy, just update the time                                     
+                                    = gstate { gameTime = updatedTime }
                              where
+                                -- update the total game time
                                 updatedTime = gameTime gstate + secs
 
 -- | Updates the enemy

@@ -16,8 +16,8 @@ main = playIO (InWindow "Typing Game" (width, height) (offset, offset))
               step             -- Step function
 
 width, height :: Int
-width = 400
-height = 400
+width = 600
+height = 600
 
 offset :: Int
 offset = 0
