@@ -17,7 +17,8 @@ viewPure gstate playerPic = Pictures ([playerPic] ++ enemySprites gstate ++ enem
 -- | Defines how the player should be displayed and where
 playerSprite :: GameState -> IO Picture
 playerSprite gstate = do playerPicture <- loadBMP "player.bmp"
-                         return $ uncurry translate (playerPos (player gstate)) $ rotate (playerRotationVal (player gstate)) $ playerPicture
+                         return $ uncurry translate (playerPos p) $ rotate (playerRotationVal p) $ playerPicture
+                         where p = player gstate
 
 -- | Radius of the player
 playerRadius :: Float

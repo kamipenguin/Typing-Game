@@ -10,17 +10,17 @@ import Graphics.Gloss
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Interface.IO.Game
   
--- | Handle one iteration of the game
+-- | Checks in which state we are in the game and act accordingly.
 step :: Float -> GameState -> IO GameState
-step secs gstate = spawnEnemies secs $ movePlayer $ updateEnemies secs $ updateDifficulty secs $ handleCollision $ checkGameState gstate
-
--- | Checks in which state the game is and act accordingly
-checkGameState :: GameState -> GameState
-                        -- TODO MAKE GAME OVER STATE (eg freeze the game and print game over and save high score in file)
-checkGameState gstate | state gstate == IsGameOver = initialState
-                        -- TODO MAKE PAUSE FUNCTIONALITY
-                      | state gstate == IsPaused = gstate
-                      | otherwise = gstate
+step secs gstate | state gstate == IsGameOver = updateHighScores gstate --When the game is over, store the score in the highscore list and restart the game
+                 -- When the game is paused, do nothing
+                 | state gstate == IsPaused   = return $ gstate
+                 -- When still playing, handle one iteration of the game
+                 | otherwise                  = spawnEnemies secs $ 
+                                                movePlayer $ 
+                                                updateEnemies secs $ 
+                                                updateDifficulty secs $ 
+                                                handleCollision gstate
   
 -- | Spawns an enemy after some amount of time
 spawnEnemies :: Float -> GameState -> IO GameState
@@ -103,8 +103,9 @@ inputKey (EventKey (SpecialKey KeyEnter) Down _ _) gstate  = checkWord (typedWor
 -- Delete the last character when the delete key is pressed 
 inputKey (EventKey (SpecialKey KeyDelete) Down _ _) gstate | typedWord gstate /= "" = gstate { typedWord = init (typedWord gstate) }
                                                            | otherwise = gstate
--- TODO ADD PAUSE KEY FUNCTIONALITY
-inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate    = gstate { state = IsPaused }
+-- Pauses and unpauses the game
+inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate    | state gstate == IsPlaying = gstate { state = IsPaused }
+                                                           | otherwise = gstate { state = IsPlaying }
 -- Otherwise keep the same gamestate
 inputKey _ gstate                                          = gstate
   

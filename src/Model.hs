@@ -79,9 +79,11 @@ playerRotationSpeed = 2
 getRandomNumber :: Int -> Int -> IO Int
 getRandomNumber min max = getStdRandom (randomR (min,max))
 
--- | Updates the highscore list
--- TODO PUT THIS SOMEWHERE TO EXECUTE WHEN THE GAME IS OVER
-updateHighScores :: GameState -> IO ()
-updateHighScores gstate = do
-                            currentHighScores <- readFile "highscores.txt"
-                            writeFile "highscores.txt" (currentHighScores ++ "\n" ++ show (gameScore gstate))
+-- | Updates the highscore list when game over
+updateHighScores :: GameState -> IO GameState
+updateHighScores gstate | state gstate == IsGameOver = 
+                            do
+                                currentHighScores <- readFile "highscores.txt"
+                                writeFile "highscores.txt" (currentHighScores ++ "\n" ++ show (gameScore gstate))
+                                return $ initialState
+                        | otherwise = return $ gstate
