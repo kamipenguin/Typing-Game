@@ -14,7 +14,7 @@ import Graphics.Gloss.Interface.IO.Game
 step :: Float -> GameState -> IO GameState
 step secs gstate | state gstate == IsGameOver = updateHighScores gstate --When the game is over, store the score in the highscore list and restart the game
                  -- When the game is paused, do nothing
-                 | state gstate == IsPaused   = return $ gstate
+                 | state gstate == IsPaused   = return gstate
                  -- When still playing, handle one iteration of the game
                  | otherwise                  = spawnEnemies secs $ 
                                                 movePlayer $ 
@@ -30,7 +30,7 @@ spawnEnemies secs gstate | elapsedTime gstate + secs > enemySpawnInterval gstate
                                  word <- pickRandomWord (gameDifficulty gstate)
                                  return $ gstate { 
                                           enemies = e, 
-                                          randomSpawnPosition = mulSV 340 (unitVectorAtAngle ((fromIntegral (randomAngle) - 90) * pi / 180)), 
+                                          randomSpawnPosition = mulSV 340 (unitVectorAtAngle ((fromIntegral randomAngle - 90) * pi / 180)), 
                                           randomWord = word, elapsedTime = 0 
                                           }
                          | otherwise
@@ -42,19 +42,19 @@ spawnEnemies secs gstate | elapsedTime gstate + secs > enemySpawnInterval gstate
 
 -- | Updates the game difficulty over time
 updateDifficulty :: Float -> GameState -> GameState
-updateDifficulty secs gstate | gameTime gstate > 20 && gameTime gstate < 40   
+updateDifficulty secs gstate | totalTime > 20 && totalTime < 40   
                                     -- set difficulty to normal
                                     = gstate { gameDifficulty = Normal, gameTime = updatedTime }
-                             | gameTime gstate >= 40 && gameTime gstate < 60
+                             | totalTime >= 40 && totalTime < 60
                                     -- spawn enemies quicker
                                     = gstate { enemySpawnInterval = 1, gameTime = updatedTime }
-                             | gameTime gstate >= 60 && gameTime gstate < 80  
+                             | totalTime >= 60 && totalTime < 80  
                                     -- set difficulty to hard
                                     = gstate { gameDifficulty = Hard, gameTime = updatedTime }   
-                             | gameTime gstate >= 80 && gameTime gstate < 100 
+                             | totalTime >= 80 && totalTime < 100 
                                     -- more enemies can be present at a time
                                     = gstate { maxEnemies = 30, gameTime = updatedTime }         
-                             | gameTime gstate >= 100 
+                             | totalTime >= 100 
                                     -- spawn enemies quicker                         
                                     = gstate { enemySpawnInterval = 0.5, gameTime = updatedTime }
                              | otherwise  
@@ -62,7 +62,8 @@ updateDifficulty secs gstate | gameTime gstate > 20 && gameTime gstate < 40
                                     = gstate { gameTime = updatedTime }
                              where
                                 -- update the total game time
-                                updatedTime = gameTime gstate + secs
+                                updatedTime = totalTime + secs
+                                totalTime = gameTime gstate
 
 -- | Updates the enemy
 updateEnemies :: Float -> GameState -> GameState
@@ -87,7 +88,7 @@ updateEnemyPos secs gstate e = e {enemyPos = (x', y'), enemyWord = enemyWord e}
 
 -- | Handles collision
 handleCollision :: GameState -> GameState
-handleCollision gstate | any (True==) (map (checkCollision gstate) (enemies gstate)) = gstate { state = IsGameOver }
+handleCollision gstate | True `elem` map (checkCollision gstate) (enemies gstate) = gstate { state = IsGameOver }
                        | otherwise = gstate { state = IsPlaying }
 
 -- | Checks if an enemy collides with the player, so if the distance between the enemy and the player is smaller than the sum of their radius
@@ -113,7 +114,7 @@ inputKey (EventKey (SpecialKey KeyLeft) Up _ _) gstate     = gstate { keyVar = K
 inputKey (EventKey (SpecialKey KeyRight) Down _ _) gstate  = gstate { keyVar = KeyRight, keyState = Down}
 inputKey (EventKey (SpecialKey KeyRight) Up _ _) gstate    = gstate { keyVar = KeyRight, keyState = Up}
 -- Update the word when a character is typed
-inputKey (EventKey (Char c) Down _ _) gstate               = gstate { typedWord = (typedWord gstate) ++ [c] }
+inputKey (EventKey (Char c) Down _ _) gstate               = gstate { typedWord = typedWord gstate ++ [c] }
 -- Check the word when the enter key is pressed
 inputKey (EventKey (SpecialKey KeyEnter) Down _ _) gstate  = checkWord (typedWord gstate) $ gstate { typedWord = "" }
 -- Delete the last character when the delete key is pressed 
@@ -128,13 +129,13 @@ inputKey _ gstate                                          = gstate
 -- | Checks which key is pressed down and act accordingly (moving up, moving down, rotating left, rotating right)
 movePlayer :: GameState -> GameState
 movePlayer gstate | keyVar gstate == KeyUp && keyState gstate == Down 
-                      = (gstate { player = Player { playerPos = (x', y'), playerRotationVal = r } })
+                      = gstate { player = Player { playerPos = (x', y'), playerRotationVal = r } }
                   | keyVar gstate == KeyDown && keyState gstate == Down 
-                      = (gstate { player = Player { playerPos = (x'', y''), playerRotationVal = r} })
+                      = gstate { player = Player { playerPos = (x'', y''), playerRotationVal = r} }
                   | keyVar gstate == KeyLeft && keyState gstate == Down 
-                      = (gstate { player = Player { playerPos = (x, y), playerRotationVal = (r - playerRotationSpeed) * playerSpeed } })
+                      = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r - playerRotationSpeed) * playerSpeed } }
                   | keyVar gstate == KeyRight && keyState gstate == Down 
-                      = (gstate { player = Player { playerPos = (x, y), playerRotationVal = (r + playerRotationSpeed) * playerSpeed } })
+                      = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r + playerRotationSpeed) * playerSpeed } }
                   | otherwise 
                       = gstate
                   where

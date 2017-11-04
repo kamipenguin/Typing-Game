@@ -41,13 +41,13 @@ difficulty s | length s < 5 = Easy
 -- | Given a difficulty, picks random word out of the corresponding list
 pickRandomWord :: WordDifficulty -> IO String
 pickRandomWord diff | diff == Easy = 
-                            do randomIndex <- getRandomNumber 0 ((length easyWords)-1)
+                            do randomIndex <- getRandomNumber 0 (length easyWords - 1)
                                return $ easyWords !! randomIndex 
                     | diff == Normal = 
-                            do randomIndex <- getRandomNumber 0 ((length normalWords)-1)
+                            do randomIndex <- getRandomNumber 0 (length normalWords - 1)
                                return $ normalWords !! randomIndex 
                     | otherwise = 
-                            do randomIndex <- getRandomNumber 0 ((length hardWords)-1)
+                            do randomIndex <- getRandomNumber 0 (length hardWords - 1)
                                return $ hardWords !! randomIndex 
 
 -- | Checks if the word the player has typed is the same as an enemy's word, update the enemies in the game and update the score
@@ -57,9 +57,9 @@ checkWord s gstate = gstate { enemies = e, gameScore = score }
                             -- List of enemies who are still active in the game
                             e = toList (difference (fromList (enemies gstate)) enemySet)
                             -- Set of enemies which has the same word as the word the player has typed in
-                            enemySet = fromList (catMaybes (Prelude.map (checkWordHelper s) (enemies gstate)))
+                            enemySet = fromList (mapMaybe (checkWordHelper s) (enemies gstate))
                             -- Updates the score
-                            score = (gameScore gstate) + sum (Prelude.map getScore (toList enemySet))
+                            score = gameScore gstate + sum (Prelude.map getScore (toList enemySet))
 
 -- | Helper function to check if the word the player has typed is the same as an enemy's word
 checkWordHelper :: String -> Enemy -> Maybe Enemy
