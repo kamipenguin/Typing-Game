@@ -6,7 +6,6 @@ import Model
 import Game
 import Words
 
-import Graphics.Gloss
 import Graphics.Gloss.Data.Vector
 import Graphics.Gloss.Interface.IO.Game
   
@@ -85,18 +84,6 @@ updateEnemyPos secs gstate e = e {enemyPos = (x', y'), enemyWord = enemyWord e}
                                   -- calculate the new position of the enemy with the direction vector, so it will walk towards the player
                                   x' = x + dx * secs * enemySpeed
                                   y' = y + dy * secs * enemySpeed
-
--- | Handles collision
-handleCollision :: GameState -> GameState
-handleCollision gstate | True `elem` map (checkCollision gstate) (enemies gstate) = gstate { state = IsGameOver }
-                       | otherwise = gstate { state = IsPlaying }
-
--- | Checks if an enemy collides with the player, so if the distance between the enemy and the player is smaller than the sum of their radius
-checkCollision :: GameState -> Enemy -> Bool
-checkCollision gstate e = sqrt (x^2 + y^2) < playerRadius + enemyRadius
-                        where
-                            x = fst (playerPos (player gstate)) - fst (enemyPos e)
-                            y = snd (playerPos (player gstate)) - snd (enemyPos e)
 
 -- | Handles user input
 input :: Event -> GameState -> IO GameState

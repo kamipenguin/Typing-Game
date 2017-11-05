@@ -1,8 +1,7 @@
--- | Basic game functions and variables
+-- | Basic typing game functions and variables
 module Game where
 
 import System.Random
-import System.IO
 import Data.Maybe
 import Data.Set
 
@@ -30,7 +29,7 @@ enemyRadius = 10
 
 -- | Gets a random number between a given range
 getRandomNumber :: Int -> Int -> IO Int
-getRandomNumber min max = getStdRandom (randomR (min,max))
+getRandomNumber minInt maxInt = getStdRandom (randomR (minInt, maxInt))
 
 -- | Checks if the word the player has typed is the same as an enemy's word, update the enemies in the game and update the score
 checkWord :: String -> GameState -> GameState
@@ -47,18 +46,30 @@ checkWord s gstate = gstate { enemies = e, gameScore = score }
 checkWordHelper :: String -> Enemy -> Maybe Enemy
 checkWordHelper s e | enemyWord e == s = Just e
                     | otherwise = Nothing
-
--- | Determines the difficulty of the word
-getWordDifficulty :: String -> Difficulty
-getWordDifficulty s | length s < 5 = Easy
-                    | length s >= 5 && length s < 8 = Normal
-                    | otherwise = Hard
     
 -- | Calculates the score of a defeated enemy
 getScore :: Enemy -> Int
 getScore e | getWordDifficulty (enemyWord e) == Easy = 100
            | getWordDifficulty (enemyWord e) == Normal = 500
            | otherwise = 1000
+
+-- | Determines the difficulty of the word
+getWordDifficulty :: String -> Difficulty
+getWordDifficulty s | length s < 5 = Easy
+                    | length s >= 5 && length s < 8 = Normal
+                    | otherwise = Hard
+                    
+-- | Handles collision
+handleCollision :: GameState -> GameState
+handleCollision gstate | True `elem` Prelude.map (checkCollision gstate) (enemies gstate) = gstate { state = IsGameOver }
+                       | otherwise = gstate { state = IsPlaying }
+
+-- | Checks if an enemy collides with the player, so when the distance between the enemy and the player is smaller than the sum of their radius
+checkCollision :: GameState -> Enemy -> Bool
+checkCollision gstate e = sqrt (x^2 + y^2) < playerRadius + enemyRadius
+                        where
+                            x = fst (playerPos (player gstate)) - fst (enemyPos e)
+                            y = snd (playerPos (player gstate)) - snd (enemyPos e)
 
 -- | Updates the highscore list when game over
 updateHighScores :: GameState -> IO GameState
