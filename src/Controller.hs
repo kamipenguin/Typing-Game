@@ -23,6 +23,7 @@ step secs gstate | state gstate == IsGameOver = gameOverState secs gstate --When
                                                 updateDifficulty secs $ 
                                                 handleCollision gstate
 
+-- | Handles the game over state: "animate" the player when he dies and after that, update the highscores
 gameOverState :: Float -> GameState -> IO GameState
 gameOverState secs gstate | animationDuration gstate - secs > 0 = return gstate { 
                                                                          player = Player { playerPos = playerPos (player gstate), 

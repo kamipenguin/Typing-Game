@@ -71,7 +71,7 @@ checkCollision gstate e = sqrt (x^2 + y^2) < playerRadius + enemyRadius
                             x = fst (playerPos (player gstate)) - fst (enemyPos e)
                             y = snd (playerPos (player gstate)) - snd (enemyPos e)
 
--- | Updates the highscore list when game over
+-- | Updates the highscore list when game over and now you can restart the game
 updateHighScores :: GameState -> IO GameState
 updateHighScores gstate = do appendFile "highscores.txt" (show (gameScore gstate) ++ "\n")
                              return gstate { state = CanRestart }

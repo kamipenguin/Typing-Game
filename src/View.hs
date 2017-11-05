@@ -47,7 +47,7 @@ currentText gstate = uncurry translate (-290, -290) $ scale 0.15 0.15 $ color wh
 scoreText :: GameState -> Picture
 scoreText gstate = uncurry translate (-290, 280) $ scale 0.1 0.1 $ color white $ text ("Score: " ++ show (gameScore gstate))
 
--- | Should display "Game Over" when the game is over and "Paused" when the game is paused
+-- | Should display "Game Over" when the game is over, "Paused" when the game is paused and how to restart when you can restart the game
 gameStateText :: GameState -> Picture
 gameStateText gstate | state gstate == IsGameOver = showText (-100, 0) "Game Over"
                      | state gstate == IsPaused = showText (-50, 0) "Paused"
