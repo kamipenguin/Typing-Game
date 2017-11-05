@@ -3,7 +3,7 @@
 module Controller where
   
 import Model
-import View
+import Game
 import Words
 
 import Graphics.Gloss

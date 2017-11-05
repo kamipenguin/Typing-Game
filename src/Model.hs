@@ -2,9 +2,6 @@
 --   which represent the state of the game
 module Model where
 
-import System.Random
-import System.IO
-
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 
@@ -20,7 +17,7 @@ data GameState = GameState {
                  typedWord :: String,                   -- the word the player has typed
                  randomSpawnPosition :: Point,          -- the random spawn position where an enemy will be spawned in this gamestate
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
-                 gameDifficulty :: WordDifficulty,      -- the difficulty of the game
+                 gameDifficulty :: Difficulty,      -- the difficulty of the game
                  gameScore :: Int,                      -- the score of the player
                  elapsedTime :: Float,                  -- the elapsed game time used to keep track of when to spawn a new enemy
                  gameTime :: Float                      -- the total elapsed game time
@@ -56,30 +53,6 @@ data Enemy = Enemy {enemyPos :: Point, enemyWord :: String }
 data Player = Player { playerPos :: Point, playerRotationVal :: Float } 
              deriving Show
 
--- | Defines the word difficulty
-data WordDifficulty = Easy | Normal | Hard
+-- | Defines the difficulty of the game
+data Difficulty = Easy | Normal | Hard
                      deriving (Eq, Show)
-
--- | How fast the enemy is
-enemySpeed :: Float
-enemySpeed = 15
-
--- | How fast the player is
-playerSpeed :: Float
-playerSpeed = 1
-
--- | How fast the player rotates
-playerRotationSpeed :: Float
-playerRotationSpeed = 2
-
--- | Gets a random number between a given range
-getRandomNumber :: Int -> Int -> IO Int
-getRandomNumber min max = getStdRandom (randomR (min,max))
-
--- | Updates the highscore list when game over
-updateHighScores :: GameState -> IO GameState
-updateHighScores gstate | state gstate == IsGameOver = 
-                            do
-                                appendFile "highscores.txt" (show (gameScore gstate) ++ "\n")
-                                return initialState
-                        | otherwise = return gstate

@@ -3,6 +3,7 @@
 module View where
 
 import Model
+import Game
 
 import Graphics.Gloss
 
@@ -20,20 +21,12 @@ playerSprite gstate = do playerPicture <- loadBMP "player.bmp"
                          return $ uncurry translate (playerPos p) $ rotate (playerRotationVal p) playerPicture
                          where p = player gstate
 
--- | Radius of the player
-playerRadius :: Float
-playerRadius = 10
-
 -- | Defines how the enemies should be displayed and where
 enemySprites :: GameState -> [Picture]
 enemySprites gstate = map enemySprite (enemies gstate)
 
 enemySprite :: Enemy -> Picture
 enemySprite e = uncurry translate (enemyPos e) $ color red $ circleSolid enemyRadius
-
--- | Radus of the enemy
-enemyRadius :: Float
-enemyRadius = 10
 
 -- | Defines how the text should be displayed and where
 enemyTexts :: GameState -> [Picture]
