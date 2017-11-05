@@ -12,6 +12,7 @@ data GameState = GameState {
                  enemies :: [Enemy],                    -- the enemies in the game
                  maxEnemies :: Int,                     -- max enemies that can be present at the same time
                  enemySpawnInterval :: Float,           -- used to spawn enemies at a certain interval
+                 elapsedTime :: Float,                  -- the elapsed game time used to keep track of how many seconds have passed by after spawning a new enemy
                  keyVar :: SpecialKey,                  -- the key
                  keyState :: KeyState,                  -- state of the key (Up or Down)
                  typedWord :: String,                   -- the word the player has typed
@@ -19,7 +20,6 @@ data GameState = GameState {
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
                  gameDifficulty :: Difficulty,          -- the difficulty of the game
                  gameScore :: Int,                      -- the score of the player
-                 elapsedTime :: Float,                  -- the elapsed game time used to keep track of when to spawn a new enemy
                  gameTime :: Float,                     -- the total elapsed game time
                  animationDuration :: Float             -- the duration of the "animation"
                  } deriving Show
@@ -32,6 +32,7 @@ initialState = GameState {
                enemies = [],
                maxEnemies = 20,
                enemySpawnInterval = 2,
+               elapsedTime = 0,
                keyVar = KeyUnknown,
                keyState = Up,
                typedWord = "",
@@ -39,7 +40,6 @@ initialState = GameState {
                randomWord = "test",
                gameDifficulty = Easy,
                gameScore = 0,
-               elapsedTime = 0,
                gameTime = 0,
                animationDuration = 3
                }
