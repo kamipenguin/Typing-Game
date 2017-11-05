@@ -17,10 +17,11 @@ data GameState = GameState {
                  typedWord :: String,                   -- the word the player has typed
                  randomSpawnPosition :: Point,          -- the random spawn position where an enemy will be spawned in this gamestate
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
-                 gameDifficulty :: Difficulty,      -- the difficulty of the game
+                 gameDifficulty :: Difficulty,          -- the difficulty of the game
                  gameScore :: Int,                      -- the score of the player
                  elapsedTime :: Float,                  -- the elapsed game time used to keep track of when to spawn a new enemy
-                 gameTime :: Float                      -- the total elapsed game time
+                 gameTime :: Float,                     -- the total elapsed game time
+                 animationDuration :: Float             -- the duration of the "animation"
                  } deriving Show
 
 -- | The initial game state
@@ -39,16 +40,18 @@ initialState = GameState {
                gameDifficulty = Easy,
                gameScore = 0,
                elapsedTime = 0,
-               gameTime = 0 
+               gameTime = 0,
+               animationDuration = 3
                }
 
 -- | Defines the states of the game
-data State = IsPlaying | IsGameOver | IsPaused
+data State = IsPlaying | IsGameOver | IsPaused | CanRestart
             deriving (Show, Eq)
 
 -- | Stores the data of an enemy
 data Enemy = Enemy {enemyPos :: Point, enemyWord :: String } 
             deriving (Show, Ord, Eq)
+            
 -- | Stores the data of the player
 data Player = Player { playerPos :: Point, playerRotationVal :: Float } 
              deriving Show

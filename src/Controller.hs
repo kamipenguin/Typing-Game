@@ -11,15 +11,25 @@ import Graphics.Gloss.Interface.IO.Game
   
 -- | Checks in which state we are in the game and act accordingly.
 step :: Float -> GameState -> IO GameState
-step secs gstate | state gstate == IsGameOver = updateHighScores gstate --When the game is over, store the score in the highscore list and restart the game
+step secs gstate | state gstate == IsGameOver = gameOverState secs gstate --When the game is over, store the score in the highscore list and restart the game
                  -- When the game is paused, do nothing
                  | state gstate == IsPaused   = return gstate
+                 -- When the player is game over and the game can be restarted
+                 | state gstate == CanRestart = return gstate
                  -- When still playing, handle one iteration of the game
                  | otherwise                  = spawnEnemies secs $ 
                                                 movePlayer $ 
                                                 updateEnemies secs $ 
                                                 updateDifficulty secs $ 
                                                 handleCollision gstate
+
+gameOverState :: Float -> GameState -> IO GameState
+gameOverState secs gstate | animationDuration gstate - secs > 0 = return gstate { 
+                                                                         player = Player { playerPos = playerPos (player gstate), 
+                                                                                           playerRotationVal = playerRotationVal (player gstate) - playerRotationSpeed }, 
+                                                                         animationDuration = animationDuration gstate - secs 
+                                                                         }
+                          | otherwise = updateHighScores gstate
   
 -- | Spawns an enemy after some amount of time
 spawnEnemies :: Float -> GameState -> IO GameState
@@ -110,6 +120,9 @@ inputKey (EventKey (SpecialKey KeyDelete) Down _ _) gstate | typedWord gstate /=
 -- Pauses and unpauses the game
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate    | state gstate == IsPlaying = gstate { state = IsPaused }
                                                            | otherwise = gstate { state = IsPlaying }
+-- Restarts the game when you're game over
+inputKey (EventKey (SpecialKey KeySpace) Down _ _) gstate  | state gstate == CanRestart = initialState
+                                                           | otherwise = gstate
 -- Otherwise keep the same gamestate
 inputKey _ gstate                                          = gstate
   
