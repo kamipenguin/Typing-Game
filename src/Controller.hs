@@ -27,7 +27,7 @@ step secs gstate | state gstate == IsGameOver = gameOverState secs gstate --When
 gameOverState :: Float -> GameState -> IO GameState
 gameOverState secs gstate | animationDuration gstate - secs > 0 = return gstate { 
                                                                          player = Player { playerPos = playerPos (player gstate), 
-                                                                                           playerRotationVal = playerRotationVal (player gstate) - playerRotationSpeed }, 
+                                                                                           playerRotationVal = playerRotationVal (player gstate) - playerRotationSpeed * 2 }, 
                                                                          animationDuration = animationDuration gstate - secs 
                                                                          }
                           | otherwise = updateHighScores gstate
@@ -40,7 +40,7 @@ spawnEnemies secs gstate | elapsedTime gstate + secs > enemySpawnInterval gstate
                                  word <- pickRandomWord (gameDifficulty gstate)
                                  return $ gstate { 
                                           enemies = e, 
-                                          randomSpawnPosition = mulSV 340 (unitVectorAtAngle ((fromIntegral randomAngle - 90) * pi / 180)), 
+                                          randomSpawnPosition = mulSV 340 $ unitVectorAtAngle ((fromIntegral randomAngle - 90) * pi / 180), 
                                           randomWord = word, elapsedTime = 0 
                                           }
                          | otherwise

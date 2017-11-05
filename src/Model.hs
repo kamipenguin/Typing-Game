@@ -41,7 +41,7 @@ initialState = GameState {
                gameDifficulty = Easy,
                gameScore = 0,
                gameTime = 0,
-               animationDuration = 3
+               animationDuration = 1.5
                }
 
 -- | Defines the states of the game
