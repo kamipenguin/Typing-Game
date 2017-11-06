@@ -13,10 +13,10 @@ data GameState = GameState {
                  maxEnemies :: Int,                     -- max enemies that can be present at the same time
                  enemySpawnInterval :: Float,           -- used to spawn enemies at a certain interval
                  elapsedTime :: Float,                  -- the elapsed game time used to keep track of how many seconds have passed by after spawning a new enemy
-                 keyVarUpDown :: SpecialKey,            -- used to store specialkey KeyUp or KeyDown (which one was pressed last)
-                 keyStateUpDown :: KeyState,            -- used to store the state of the specialkey KeyUp or KeyDown (Up or Down)
-                 keyVarLeftRight :: SpecialKey,         -- used to store specialkey KeyLeft or keyRight (which one was pressed last)
-                 keyStateLeftRight :: KeyState,          -- used to store the state of the specialkey KeyLeft or KeyRIght (Up or Down)
+                 keyStateUp :: KeyState,                -- used to store the state of the specialkey KeyUp (Up or Down)
+                 keyStateDown :: KeyState,              -- used to store the state of the specialkey KeyDown (Up or Down)
+                 keyStateLeft :: KeyState,              -- used to store the state of the specialkey KeyLeft (Up or Down)
+                 keyStateRight :: KeyState,             -- used to store the state of the specialkey KeyRight (Up or Down)
                  typedWord :: String,                   -- the word the player has typed
                  randomSpawnPosition :: Point,          -- the random spawn position where an enemy will be spawned in this gamestate
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
@@ -35,10 +35,10 @@ initialState = GameState {
                maxEnemies = 20,
                enemySpawnInterval = 2,
                elapsedTime = 0,
-               keyVarUpDown = KeyUnknown,
-               keyStateUpDown = Up,
-               keyVarLeftRight = KeyUnknown,
-               keyStateLeftRight = Up,
+               keyStateUp = Up,
+               keyStateDown = Up,
+               keyStateLeft = Up,
+               keyStateRight = Up,
                typedWord = "",
                randomSpawnPosition = (0, 350),
                randomWord = "test",

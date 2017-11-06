@@ -103,14 +103,14 @@ input e gstate = return (inputKey e gstate)
 -- | Stores in the gamestate the state of a key. Also handles when a character is pressed and when the pause (esc) key is pressed.
 inputKey :: Event -> GameState -> GameState
 -- store the the key and the state of the key
-inputKey (EventKey (SpecialKey KeyUp) Down _ _) gstate     = gstate { keyVarUpDown = KeyUp, keyStateUpDown = Down}
-inputKey (EventKey (SpecialKey KeyUp) Up _ _) gstate       = gstate { keyVarUpDown = KeyUp, keyStateUpDown = Up}
-inputKey (EventKey (SpecialKey KeyDown) Down _ _) gstate   = gstate { keyVarUpDown = KeyDown, keyStateUpDown = Down}
-inputKey (EventKey (SpecialKey KeyDown) Up _ _) gstate     = gstate { keyVarUpDown = KeyDown, keyStateUpDown = Up}
-inputKey (EventKey (SpecialKey KeyLeft) Down _ _) gstate   = gstate { keyVarLeftRight = KeyLeft, keyStateLeftRight = Down}
-inputKey (EventKey (SpecialKey KeyLeft) Up _ _) gstate     = gstate { keyVarLeftRight = KeyLeft, keyStateLeftRight = Up}
-inputKey (EventKey (SpecialKey KeyRight) Down _ _) gstate  = gstate { keyVarLeftRight = KeyRight, keyStateLeftRight = Down}
-inputKey (EventKey (SpecialKey KeyRight) Up _ _) gstate    = gstate { keyVarLeftRight = KeyRight, keyStateLeftRight = Up}
+inputKey (EventKey (SpecialKey KeyUp) Down _ _) gstate     = gstate { keyStateUp = Down}
+inputKey (EventKey (SpecialKey KeyUp) Up _ _) gstate       = gstate { keyStateUp = Up}
+inputKey (EventKey (SpecialKey KeyDown) Down _ _) gstate   = gstate { keyStateDown = Down}
+inputKey (EventKey (SpecialKey KeyDown) Up _ _) gstate     = gstate { keyStateDown = Up}
+inputKey (EventKey (SpecialKey KeyLeft) Down _ _) gstate   = gstate { keyStateLeft = Down}
+inputKey (EventKey (SpecialKey KeyLeft) Up _ _) gstate     = gstate { keyStateLeft = Up}
+inputKey (EventKey (SpecialKey KeyRight) Down _ _) gstate  = gstate { keyStateRight = Down}
+inputKey (EventKey (SpecialKey KeyRight) Up _ _) gstate    = gstate { keyStateRight = Up}
 -- Update the word when a character is typed
 inputKey (EventKey (Char c) Down _ _) gstate               | state gstate == IsPlaying = gstate { typedWord = typedWord gstate ++ [c] }
                                                            | otherwise = gstate
@@ -131,13 +131,13 @@ inputKey _ gstate                                          = gstate
   
 -- | Checks which key is pressed down and act accordingly (moving up, moving down, rotating left, rotating right)
 movePlayer :: GameState -> GameState
-movePlayer gstate | keyVarUpDown gstate == KeyUp && keyStateUpDown gstate == Down 
+movePlayer gstate | keyStateUp gstate == Down 
                       = gstate { player = Player { playerPos = (x', y'), playerRotationVal = r } }
-                  | keyVarUpDown gstate == KeyDown && keyStateUpDown gstate == Down 
+                  | keyStateDown gstate == Down 
                       = gstate { player = Player { playerPos = (x'', y''), playerRotationVal = r} }
-                  | keyVarLeftRight gstate == KeyLeft && keyStateLeftRight gstate == Down 
+                  | keyStateLeft gstate == Down 
                       = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r - playerRotationSpeed) * playerSpeed } }
-                  | keyVarLeftRight gstate == KeyRight && keyStateLeftRight gstate == Down 
+                  | keyStateRight gstate == Down 
                       = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r + playerRotationSpeed) * playerSpeed } }
                   | otherwise 
                       = gstate
