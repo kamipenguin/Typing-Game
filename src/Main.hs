@@ -3,6 +3,7 @@ module Main where
 import Controller
 import Model
 import View
+import Game
 
 import Graphics.Gloss.Interface.IO.Game
 
@@ -14,13 +15,3 @@ main = playIO (InWindow "Typing Game" (width, height) (offset, offset))
               view             -- View function
               input            -- Event function
               step             -- Step function
-
-width, height :: Int
-width = 600
-height = 600
-
-offset :: Int
-offset = 0
-
-fps :: Int
-fps = 60

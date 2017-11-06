@@ -52,6 +52,6 @@ gameStateText :: GameState -> Picture
 gameStateText gstate | state gstate == IsGameOver = showText (-100, 0) "Game Over"
                      | state gstate == IsPaused = showText (-50, 0) "Paused"
                      | state gstate == CanRestart = showText (-285, 0) "Press SPACE to restart the game"
-                     | otherwise = showText (0, 0) ""
+                     | otherwise = Blank
                      where
                       showText pos s = uncurry translate pos $ scale 0.25 0.25 $ color green $ text s

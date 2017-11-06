@@ -13,8 +13,10 @@ data GameState = GameState {
                  maxEnemies :: Int,                     -- max enemies that can be present at the same time
                  enemySpawnInterval :: Float,           -- used to spawn enemies at a certain interval
                  elapsedTime :: Float,                  -- the elapsed game time used to keep track of how many seconds have passed by after spawning a new enemy
-                 keyVar :: SpecialKey,                  -- the key
-                 keyState :: KeyState,                  -- state of the key (Up or Down)
+                 keyVarUpDown :: SpecialKey,            -- used to store specialkey KeyUp or KeyDown (which one was pressed last)
+                 keyStateUpDown :: KeyState,            -- used to store the state of the specialkey KeyUp or KeyDown (Up or Down)
+                 keyVarLeftRight :: SpecialKey,         -- used to store specialkey KeyLeft or keyRight (which one was pressed last)
+                 keyStateLeftRight :: KeyState,          -- used to store the state of the specialkey KeyLeft or KeyRIght (Up or Down)
                  typedWord :: String,                   -- the word the player has typed
                  randomSpawnPosition :: Point,          -- the random spawn position where an enemy will be spawned in this gamestate
                  randomWord :: String,                  -- the random word of the enemy that will be spawned in this gamestate
@@ -33,8 +35,10 @@ initialState = GameState {
                maxEnemies = 20,
                enemySpawnInterval = 2,
                elapsedTime = 0,
-               keyVar = KeyUnknown,
-               keyState = Up,
+               keyVarUpDown = KeyUnknown,
+               keyStateUpDown = Up,
+               keyVarLeftRight = KeyUnknown,
+               keyStateLeftRight = Up,
                typedWord = "",
                randomSpawnPosition = (0, 350),
                randomWord = "test",

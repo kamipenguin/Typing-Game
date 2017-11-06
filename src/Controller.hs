@@ -21,7 +21,7 @@ step secs gstate | state gstate == IsGameOver = gameOverState secs gstate --When
                                                 movePlayer $ 
                                                 updateEnemies secs $ 
                                                 updateDifficulty secs $ 
-                                                handleCollision gstate
+                                                handleEnemyCollision gstate
 
 -- | Handles the game over state: "animate" the player when he dies and after that, update the highscores
 gameOverState :: Float -> GameState -> IO GameState
@@ -103,20 +103,22 @@ input e gstate = return (inputKey e gstate)
 -- | Stores in the gamestate the state of a key. Also handles when a character is pressed and when the pause (esc) key is pressed.
 inputKey :: Event -> GameState -> GameState
 -- store the the key and the state of the key
-inputKey (EventKey (SpecialKey KeyUp) Down _ _) gstate     = gstate { keyVar = KeyUp, keyState = Down}
-inputKey (EventKey (SpecialKey KeyUp) Up _ _) gstate       = gstate { keyVar = KeyUp, keyState = Up}
-inputKey (EventKey (SpecialKey KeyDown) Down _ _) gstate   = gstate { keyVar = KeyDown, keyState = Down}
-inputKey (EventKey (SpecialKey KeyDown) Up _ _) gstate     = gstate { keyVar = KeyDown, keyState = Up}
-inputKey (EventKey (SpecialKey KeyLeft) Down _ _) gstate   = gstate { keyVar = KeyLeft, keyState = Down}
-inputKey (EventKey (SpecialKey KeyLeft) Up _ _) gstate     = gstate { keyVar = KeyLeft, keyState = Up}
-inputKey (EventKey (SpecialKey KeyRight) Down _ _) gstate  = gstate { keyVar = KeyRight, keyState = Down}
-inputKey (EventKey (SpecialKey KeyRight) Up _ _) gstate    = gstate { keyVar = KeyRight, keyState = Up}
+inputKey (EventKey (SpecialKey KeyUp) Down _ _) gstate     = gstate { keyVarUpDown = KeyUp, keyStateUpDown = Down}
+inputKey (EventKey (SpecialKey KeyUp) Up _ _) gstate       = gstate { keyVarUpDown = KeyUp, keyStateUpDown = Up}
+inputKey (EventKey (SpecialKey KeyDown) Down _ _) gstate   = gstate { keyVarUpDown = KeyDown, keyStateUpDown = Down}
+inputKey (EventKey (SpecialKey KeyDown) Up _ _) gstate     = gstate { keyVarUpDown = KeyDown, keyStateUpDown = Up}
+inputKey (EventKey (SpecialKey KeyLeft) Down _ _) gstate   = gstate { keyVarLeftRight = KeyLeft, keyStateLeftRight = Down}
+inputKey (EventKey (SpecialKey KeyLeft) Up _ _) gstate     = gstate { keyVarLeftRight = KeyLeft, keyStateLeftRight = Up}
+inputKey (EventKey (SpecialKey KeyRight) Down _ _) gstate  = gstate { keyVarLeftRight = KeyRight, keyStateLeftRight = Down}
+inputKey (EventKey (SpecialKey KeyRight) Up _ _) gstate    = gstate { keyVarLeftRight = KeyRight, keyStateLeftRight = Up}
 -- Update the word when a character is typed
-inputKey (EventKey (Char c) Down _ _) gstate               = gstate { typedWord = typedWord gstate ++ [c] }
+inputKey (EventKey (Char c) Down _ _) gstate               | state gstate == IsPlaying = gstate { typedWord = typedWord gstate ++ [c] }
+                                                           | otherwise = gstate
 -- Check the word when the enter key is pressed
-inputKey (EventKey (SpecialKey KeyEnter) Down _ _) gstate  = checkWord (typedWord gstate) $ gstate { typedWord = "" }
+inputKey (EventKey (SpecialKey KeyEnter) Down _ _) gstate  | state gstate == IsPlaying = checkWord (typedWord gstate) $ gstate { typedWord = "" }
+                                                           | otherwise = gstate
 -- Delete the last character when the delete key is pressed 
-inputKey (EventKey (SpecialKey KeyDelete) Down _ _) gstate | typedWord gstate /= "" = gstate { typedWord = init (typedWord gstate) }
+inputKey (EventKey (SpecialKey KeyDelete) Down _ _) gstate | state gstate == IsPlaying && not (null (typedWord gstate)) = gstate { typedWord = init (typedWord gstate) }
                                                            | otherwise = gstate
 -- Pauses and unpauses the game
 inputKey (EventKey (SpecialKey KeyEsc) Down _ _) gstate    | state gstate == IsPlaying = gstate { state = IsPaused }
@@ -129,13 +131,13 @@ inputKey _ gstate                                          = gstate
   
 -- | Checks which key is pressed down and act accordingly (moving up, moving down, rotating left, rotating right)
 movePlayer :: GameState -> GameState
-movePlayer gstate | keyVar gstate == KeyUp && keyState gstate == Down 
+movePlayer gstate | keyVarUpDown gstate == KeyUp && keyStateUpDown gstate == Down 
                       = gstate { player = Player { playerPos = (x', y'), playerRotationVal = r } }
-                  | keyVar gstate == KeyDown && keyState gstate == Down 
+                  | keyVarUpDown gstate == KeyDown && keyStateUpDown gstate == Down 
                       = gstate { player = Player { playerPos = (x'', y''), playerRotationVal = r} }
-                  | keyVar gstate == KeyLeft && keyState gstate == Down 
+                  | keyVarLeftRight gstate == KeyLeft && keyStateLeftRight gstate == Down 
                       = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r - playerRotationSpeed) * playerSpeed } }
-                  | keyVar gstate == KeyRight && keyState gstate == Down 
+                  | keyVarLeftRight gstate == KeyRight && keyStateLeftRight gstate == Down 
                       = gstate { player = Player { playerPos = (x, y), playerRotationVal = (r + playerRotationSpeed) * playerSpeed } }
                   | otherwise 
                       = gstate

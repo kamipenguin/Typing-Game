@@ -3,11 +3,24 @@ module Game where
 
 import System.Random
 import Data.Maybe
-import Data.Set
+import Data.Set hiding (map)
 
 import Model
 
--- | How fast the player is
+-- | Width and Height of the screen
+width, height :: Int
+width = 600
+height = 600
+
+-- | The offset
+offset :: Int
+offset = 0
+
+-- | Frames per second
+fps :: Int
+fps = 60
+
+-- | Speed of the player
 playerSpeed :: Float
 playerSpeed = 1
 
@@ -19,11 +32,11 @@ playerRotationSpeed = 2
 playerRadius :: Float
 playerRadius = 10
 
--- | How fast the enemy is
+-- | Speed of the enemy
 enemySpeed :: Float
 enemySpeed = 15
 
--- | Radus of the enemy
+-- | Radius of the enemy
 enemyRadius :: Float
 enemyRadius = 10
 
@@ -40,7 +53,7 @@ checkWord s gstate = gstate { enemies = e, gameScore = score }
                         -- Set of enemies which has the same word as the word the player has typed in
                         enemySet = fromList (mapMaybe (checkWordHelper s) (enemies gstate))
                         -- Updates the score
-                        score = gameScore gstate + sum (Prelude.map getScore (toList enemySet))
+                        score = gameScore gstate + sum (map getScore (toList enemySet))
     
 -- | Helper function to check if the word the player has typed is the same as an enemy's word
 checkWordHelper :: String -> Enemy -> Maybe Enemy
@@ -59,17 +72,17 @@ getWordDifficulty s | length s < 5 = Easy
                     | length s >= 5 && length s < 8 = Normal
                     | otherwise = Hard
                     
--- | Handles collision
-handleCollision :: GameState -> GameState
-handleCollision gstate | True `elem` Prelude.map (checkCollision gstate) (enemies gstate) = gstate { state = IsGameOver }
-                       | otherwise = gstate { state = IsPlaying }
+-- | Handles enemy collision
+handleEnemyCollision :: GameState -> GameState
+handleEnemyCollision gstate | True `elem` map (checkEnemyCollision gstate) (enemies gstate) = gstate { state = IsGameOver }
+                            | otherwise = gstate { state = IsPlaying }
 
 -- | Checks if an enemy collides with the player, so when the distance between the enemy and the player is smaller than the sum of their radius
-checkCollision :: GameState -> Enemy -> Bool
-checkCollision gstate e = sqrt (x^2 + y^2) < playerRadius + enemyRadius
-                        where
-                            x = fst (playerPos (player gstate)) - fst (enemyPos e)
-                            y = snd (playerPos (player gstate)) - snd (enemyPos e)
+checkEnemyCollision :: GameState -> Enemy -> Bool
+checkEnemyCollision gstate e = sqrt (x^2 + y^2) < playerRadius + enemyRadius
+                            where
+                                x = fst (playerPos (player gstate)) - fst (enemyPos e)
+                                y = snd (playerPos (player gstate)) - snd (enemyPos e)
 
 -- | Updates the highscore list when game over and now you can restart the game
 updateHighScores :: GameState -> IO GameState
