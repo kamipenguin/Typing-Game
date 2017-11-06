@@ -7,19 +7,6 @@ import Data.Set hiding (map)
 
 import Model
 
--- | Width and Height of the screen
-width, height :: Int
-width = 600
-height = 600
-
--- | The offset
-offset :: Int
-offset = 0
-
--- | Frames per second
-fps :: Int
-fps = 60
-
 -- | Speed of the player
 playerSpeed :: Float
 playerSpeed = 1
