@@ -13,7 +13,12 @@ view gstate = do showPlayer <- playerSprite gstate
 
 -- | Combines all the defined pictures into one picture
 viewPure :: GameState -> Picture -> Picture
-viewPure gstate playerPic = Pictures ([playerPic] ++ enemySprites gstate ++ enemyTexts gstate ++ [currentText gstate] ++ [scoreText gstate] ++ [gameStateText gstate])
+viewPure gstate playerPic = Pictures ([playerPic] 
+                                      ++ enemySprites gstate 
+                                      ++ enemyTexts gstate 
+                                      ++ [currentText gstate] 
+                                      ++ [scoreText gstate] 
+                                      ++ [gameStateText gstate])
 
 -- | Defines how the player should be displayed and where
 playerSprite :: GameState -> IO Picture

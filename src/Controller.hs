@@ -25,12 +25,14 @@ step secs gstate | state gstate == IsGameOver = gameOverState secs gstate --When
 
 -- | Handles the game over state: "animate" the player when he dies and after that, update the highscores
 gameOverState :: Float -> GameState -> IO GameState
-gameOverState secs gstate | animationDuration gstate - secs > 0 = return gstate { 
-                                                                         player = Player { playerPos = playerPos (player gstate), 
-                                                                                           playerRotationVal = playerRotationVal (player gstate) - playerRotationSpeed * 2 }, 
-                                                                         animationDuration = animationDuration gstate - secs 
-                                                                         }
-                          | otherwise = updateHighScores gstate
+gameOverState secs gstate | animationDuration gstate - secs > 0 
+                             = return gstate { 
+                                      player = Player { playerPos = playerPos (player gstate), 
+                                                        playerRotationVal = playerRotationVal (player gstate) - playerRotationSpeed * 2 }, 
+                                      animationDuration = animationDuration gstate - secs 
+                                      }
+                          | otherwise 
+                             = updateHighScores gstate
   
 -- | Spawns an enemy after some amount of time
 spawnEnemies :: Float -> GameState -> IO GameState
